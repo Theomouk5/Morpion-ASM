@@ -6,9 +6,11 @@ EXE = bin/prog
 all: $(EXE)
 
 run: all
+	clear
 	./$(EXE)
 
 dev: all
+	clear
 	gdb $(EXE)
 
 $(EXE): $(OBJS) | bin

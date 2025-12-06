@@ -8,7 +8,6 @@ extern scanf
 global display
 
 section .data
-    morpion:         times 9 db 'X' ; TODO: Il faut l'enlever pour en faire un paramètre (LA STACK !!)
     format_sep:      db "%c | ", 0
     format_end_line: db "%c", 10, 0
 
@@ -16,9 +15,18 @@ section .text
 display:
     push  rbp
     mov   rbp, rsp
-    sub   rsp, 32    ; TODO: Il faut l'adapter au changment d'avant
-    xor   rsi, rsi
+    sub   rsp, 32  
+
+    ; Initialisation Morpion
+    mov   rsi, rdi        ; Source
+    lea   rdi, [rbp - 32] ; Destination
+    mov   rcx, 9          ; 8 répétitions => 8 bytes
+    rep   movsb           ; Copie tout
+
+    ; Mise à zéro variable locale (RCX) et RSI
     mov   qword[rbp - 8], 0
+    xor   rsi, rsi
+
 first_line:
     mov   qword[rbp - 16], first_line
     mov   rcx, qword[rbp - 8]
@@ -31,7 +39,8 @@ less:
 eq:
     lea   rdi, [format_end_line]
 result:
-    mov   sil, byte[morpion + rcx]
+    lea   rax, [rbp - 32]
+    mov   sil, byte[rax + rcx]
     xor   rax, rax
     call  printf
     inc   qword[rbp - 8]
