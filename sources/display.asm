@@ -6,10 +6,14 @@ extern printf
 extern scanf
 
 global display
+global get_player_name
 
 section .data
-    format_sep:      db "%c | ", 0
-    format_end_line: db "%c", 10, 0
+    format_sep:            db "%c | ", 0
+    format_sep_endline:    db "%c", 10, 0
+    format_string:         db "%s", 0
+    format_string_endline: db "%s", 10, 0
+    format_player_name:    db "Joueur %d entrez votre prénom : %s", 0
 
 section .text
 display:
@@ -37,7 +41,7 @@ less:
     lea   rdi, [format_sep]
     jmp   result
 eq:
-    lea   rdi, [format_end_line]
+    lea   rdi, [format_sep_endline]
 result:
     lea   rax, [rbp - 32]
     mov   sil, byte[rax + rcx]
@@ -59,6 +63,53 @@ third_line:
     jl    less
 end_display:
     add   rsp, 8
+    mov   rsp, rbp
+    pop   rbp
+    ret
+
+
+get_player_name:
+    push  rbp
+    mov   rbp, rsp
+    sub   rsp, 32
+    mov   [rbp - 8], rdi      ; Variable contenant l'adresse de player_1_name
+    mov   [rbp - 16], rsi     ; Variable contenant l'adresse de player_2_name
+    mov   [rbp - 24], 1     ; Variable compteur
+pl_start:
+    cmp   [rbp - 24], 2
+    jg    player_end
+    lea   rdi, [format_player_name]
+    mov   rsi, [rbp - 24]
+    xor   rax, rax
+
+    ; Condition Pour Savoir quelle joueur N°1
+    cmp   [rbp - 24], 2                
+    je    pl_eq_1
+    mov   rdx, qword[rbp - 8]
+    jmp   pl_end_1
+pl_eq_1:
+    mov   rdx, qword[rbp - 16]
+pl_end_1:
+
+    ; Fin condition n°1
+    call  printf
+    lea   rdi, [format_string]
+    
+    ; Condition Pour Savoir quelle joueur N°2
+    cmp   [rbp - 24], 2
+    je    pl_eq_2
+    mov   rsi, qword[rbp - 8]
+    jmp   pl_end_2
+pl_eq_2:
+    mov   rsi, qword[rbp - 16]
+pl_end_2:
+    
+    ; Fin condition n°2
+    call  scanf
+    inc   [rbp - 24]
+    jmp   pl_start
+player_end:
+    add   rsp, 16
     mov   rsp, rbp
     pop   rbp
     ret
