@@ -7,6 +7,7 @@ extern scanf
 
 global display
 global get_player_name
+global ask_which_case
 
 section .data
     format_sep:            db "%c | ", 0
@@ -14,6 +15,11 @@ section .data
     format_string:         db "%s", 0
     format_string_endline: db "%s", 10, 0
     format_player_name:    db "Joueur %d entrez votre prénom : %s", 0
+    format_int:            db "%lld", 0
+
+section .rodata
+    format_ask_column:     db "Entrez le n° de la colonne (1 - 3) : ", 0
+    format_ask_row:        db "Entrez le n° de la ligne (1 - 3) : ", 0
 
 section .text
 display:
@@ -109,6 +115,33 @@ pl_end_2:
     inc   [rbp - 24]
     jmp   pl_start
 player_end:
+    add   rsp, 16
+    mov   rsp, rbp
+    pop   rbp
+    ret
+
+
+ask_which_case:
+    push  rbp
+    mov   rbp, rsp
+    sub   rsp, 16
+
+    lea   rdi, [format_ask_column]
+    xor   rax, rax
+    call  printf
+    lea   rdi, [format_int]
+    lea   rsi, [rbp - 8]
+    call  scanf
+
+    lea   rdi, [format_ask_row]
+    xor   rax, rax
+    call  printf
+    lea   rdi, [format_int]
+    lea   rsi, [rbp - 16]
+    call  scanf
+
+    mov   rax, [rbp - 8]
+    mov   rdi, [rbp - 16]
     add   rsp, 16
     mov   rsp, rbp
     pop   rbp

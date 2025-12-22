@@ -1,3 +1,6 @@
 # Directories
 build
 bin
+
+# Files
+.gdb_history
