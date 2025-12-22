@@ -16,6 +16,7 @@ section .data
     format_string_endline: db "%s", 10, 0
     format_player_name:    db "Joueur %d entrez votre prénom : %s", 0
     format_int:            db "%lld", 0
+    format_ask_which_case: db "%s à toi de jouer !!", 10, 0
 
 section .rodata
     format_ask_column:     db "Entrez le n° de la colonne (1 - 3) : ", 0
@@ -125,6 +126,12 @@ ask_which_case:
     push  rbp
     mov   rbp, rsp
     sub   rsp, 16
+    mov   r8, rdi
+
+    lea   rdi, [format_ask_which_case]
+    mov   rsi, r8
+    xor   rax, rax
+    call  printf
 
     lea   rdi, [format_ask_column]
     xor   rax, rax

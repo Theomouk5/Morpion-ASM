@@ -19,6 +19,12 @@ section .bss
 section .text
 main:
     sub   rsp, 8
+    lea   rdi, [player_1_name]
+    lea   rsi, [player_2_name]
+    call  get_player_name
+    lea   rdi, [morpion]
+    call  display
+    lea   rdi, [player_1_name]
     call  ask_which_case
     add   rsp, 8
     mov   rax, 0x3C
