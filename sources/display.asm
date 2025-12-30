@@ -3,6 +3,7 @@
 default rel
 
 extern printf
+extern system
 extern scanf
 
 global display
@@ -17,10 +18,8 @@ section .data
     format_player_name:    db "Joueur %d entrez votre prénom : %s", 0
     format_int:            db "%lld", 0
     format_ask_which_case: db "%s à toi de jouer !!", 10, 0
-
-section .rodata
-    format_ask_column:     db "Entrez le n° de la colonne (1 - 3) : ", 0
-    format_ask_row:        db "Entrez le n° de la ligne (1 - 3) : ", 0
+    format_input_case:     db "Entrez le n° de la case (1 - 9) : ", 0
+    cmd_clear:             db "clear", 0
 
 section .text
 display:
@@ -116,6 +115,8 @@ pl_end_2:
     inc   [rbp - 24]
     jmp   pl_start
 player_end:
+    lea   rdi, [cmd_clear]
+    call  system
     add   rsp, 16
     mov   rsp, rbp
     pop   rbp
@@ -133,22 +134,16 @@ ask_which_case:
     xor   rax, rax
     call  printf
 
-    lea   rdi, [format_ask_column]
+    lea   rdi, [format_input_case]
     xor   rax, rax
     call  printf
     lea   rdi, [format_int]
     lea   rsi, [rbp - 8]
     call  scanf
 
-    lea   rdi, [format_ask_row]
-    xor   rax, rax
-    call  printf
-    lea   rdi, [format_int]
-    lea   rsi, [rbp - 16]
-    call  scanf
-
+    lea   rdi, [cmd_clear]
+    call  system
     mov   rax, [rbp - 8]
-    mov   rdi, [rbp - 16]
     add   rsp, 16
     mov   rsp, rbp
     pop   rbp
